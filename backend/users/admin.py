@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from foodgram.config import EMPTY_VALUE_DISPLAY
 
+from foodgram.settings import EMPTY_VALUE_DISPLAY
 from .models import Subscribe, User
 
 

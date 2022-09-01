@@ -2,10 +2,11 @@ import json
 import os
 
 from django.core.management import BaseCommand
-from foodgram.settings import BASE_DIR
+from django.conf import settings
+
 from recipes.models import Ingredient
 
-JSON_DATA_FILE = os.path.join(BASE_DIR, 'data/ingredients.json')
+JSON_DATA_FILE = os.path.join(settings.BASE_DIR, 'data/ingredients.json')
 
 
 class Command(BaseCommand):

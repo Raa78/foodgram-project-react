@@ -1,10 +1,22 @@
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
-from foodgram.config import (INGREDIENT_REPETITION_ERROR,
-                             INGREDIENTS_COUNT_ERROR)
-from recipes.models import Ingredient, IngredientRecipe, Recipe, Tag
-from rest_framework import serializers
-from users.models import User
+from rest_framework import serializers, validators
+
+from foodgram.settings import (
+    EXIST_SUBSCRIBE_ERROR,
+    INGREDIENTS_COUNT_ERROR,
+    INGREDIENT_REPETITION_ERROR,
+    NON_EXIST_UNSUBSCRIBE_ERROR,
+    SUBSCRIBE_TO_YOURSELF_ERROR,
+    UNSUBSCRIBE_TO_YOURSELF_ERROR,
+)
+from recipes.models import (
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    Tag,
+)
+from users.models import Subscribe, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -93,6 +105,35 @@ class SubscribeSerializer(serializers.ModelSerializer):
         if request.user.is_anonymous:
             return False
         return obj.following.filter(user=request.user).exists()
+
+
+class SubscribeValidateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subscribe
+        fields = (
+            'user',
+            'author'
+        )
+
+    def validate(self, obj):
+        user = obj['user']
+        author = obj['author']
+        model_objects_filter = Subscribe.objects.filter(
+            user=user,
+            author=author
+        ).exists()
+        if self._context.get('request').method == 'POST':
+            if user == author:
+                raise validators.ValidationError(SUBSCRIBE_TO_YOURSELF_ERROR)
+            if model_objects_filter:
+                raise validators.ValidationError(EXIST_SUBSCRIBE_ERROR)
+        if self._context.get('request').method == 'DELETE':
+            if user == author:
+                raise validators.ValidationError(UNSUBSCRIBE_TO_YOURSELF_ERROR)
+            if not model_objects_filter:
+                raise validators.ValidationError(NON_EXIST_UNSUBSCRIBE_ERROR)
+        return obj
 
 
 class IngredientRecipeReadSerializer(serializers.ModelSerializer):

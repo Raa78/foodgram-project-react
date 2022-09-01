@@ -1,4 +1,5 @@
 from django_filters import CharFilter, FilterSet
+
 from recipes.models import Ingredient, Recipe
 
 

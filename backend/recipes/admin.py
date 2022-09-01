@@ -50,3 +50,5 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def favorites(self, obj):
         return Favorite.objects.filter(recipe=obj).count()
+
+    favorites.short_description = 'В избранных'

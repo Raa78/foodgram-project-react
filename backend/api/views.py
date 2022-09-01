@@ -1,25 +1,37 @@
-from django.db.models.aggregates import Sum
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.serializers import SetPasswordSerializer
-
-from rest_framework import status, validators, viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import IngredientFilter, RecipeFilter
-from .permissions import IsAuthorOrReadOnly, IsReadOnly, UserPermission
-from .serializers import (IngredientSerializer, RecipeCutSerializer,
-                          RecipeReadSerializer, RecipeWriteSerializer,
-                          SubscribeSerializer, TagSerializer, UserSerializer)
-from foodgram.config import (CART_INGREDIENTS_FORMAT, EXIST_SUBSCRIBE_ERROR,
-                             NON_EXIST_UNSUBSCRIBE_ERROR,
-                             SHOPPING_CART_FILENAME,
-                             SUBSCRIBE_TO_YOURSELF_ERROR,
-                             UNSUBSCRIBE_TO_YOURSELF_ERROR)
-from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                            ShoppingCart, Tag)
+from .permissions import (
+    IsAuthorOrReadOnly,
+    IsReadOnly,
+    UserPermission
+)
+from .serializers import (
+    IngredientSerializer,
+    RecipeCutSerializer,
+    RecipeReadSerializer,
+    RecipeWriteSerializer,
+    SubscribeSerializer,
+    TagSerializer,
+    UserSerializer,
+    SubscribeValidateSerializer,
+)
+from .utils import make_shopping_list
+from foodgram.settings import SHOPPING_CART_FILENAME
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    ShoppingCart,
+    Tag,
+)
 from users.models import Subscribe, User
 
 
@@ -84,33 +96,49 @@ class SubscribeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # @action(
+    #     detail=True,
+    #     permission_classes=[permissions.IsAuthenticated],
+    #     methods=['POST']
+    # )
+    @action(detail=True, methods=['post'])
+    @transaction.atomic()
     def create(self, request, user_id=None):
-        author = self.get_author(user_id)
-        if request.user == author:
-            raise validators.ValidationError(SUBSCRIBE_TO_YOURSELF_ERROR)
-
-        if Subscribe.objects.filter(user=request.user, author=author).exists():
-            raise validators.ValidationError(EXIST_SUBSCRIBE_ERROR)
-
+        user = request.user
+        author = get_object_or_404(User, id=user_id)
+        data = {
+            'user': user.id,
+            'author': author.id
+        }
+        serializer = SubscribeValidateSerializer(
+            data=data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
         Subscribe.objects.create(
-            user=request.user,
+            user=user,
             author=author
         )
         serializer = SubscribeSerializer(
-            author, context={'request': request}
+            author,
+            context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, user_id=None):
-        author = self.get_author(user_id)
-        if request.user == author:
-            raise validators.ValidationError(UNSUBSCRIBE_TO_YOURSELF_ERROR)
-        if not Subscribe.objects.filter(
-            user=request.user, author=author
-        ).exists():
-            raise validators.ValidationError(NON_EXIST_UNSUBSCRIBE_ERROR)
+        user = request.user
+        author = get_object_or_404(User, id=user_id)
+        data = {
+            'user': user.id,
+            'author': author.id
+        }
+        serializer = SubscribeValidateSerializer(
+            data=data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
         Subscribe.objects.filter(
-            user=request.user,
+            user=user,
             author=author
         ).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -129,7 +157,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def get_intersection_model(self, request, pk, model):
+    @staticmethod
+    def __get_intersection_model(request, pk, model):
         recipe = get_object_or_404(Recipe, id=pk)
         serializer = RecipeCutSerializer(recipe, context={'request': request})
         if request.method == 'POST':
@@ -149,39 +178,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, pk):
-        return self.get_intersection_model(request, pk, Favorite)
+        return self.__get_intersection_model(request, pk, Favorite)
 
     @action(
         detail=True, methods=['post', 'delete'],
         permission_classes=(IsAuthenticated,)
     )
     def shopping_cart(self, request, pk):
-        return self.get_intersection_model(request, pk, ShoppingCart)
+        return self.__get_intersection_model(request, pk, ShoppingCart)
 
     @action(
         detail=False, methods=['get'],
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        text_lines = ['Список покупок\n']
-        for item in IngredientRecipe.objects.filter(
-            recipe__cart__user=request.user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(
-            total_amount=Sum('amount')
-        ):
-            text_lines.append(
-                CART_INGREDIENTS_FORMAT.format(
-                    name=item['ingredient__name'],
-                    measurement_unit=item['ingredient__measurement_unit'],
-                    total=item['total_amount']
-                )
-            )
-        response_content = '\n'.join(text_lines)
         response = HttpResponse(
-            response_content, content_type='text/plain; charset=utf8'
+            make_shopping_list(request),
+            content_type='text/plain; charset=utf8'
         )
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
             SHOPPING_CART_FILENAME

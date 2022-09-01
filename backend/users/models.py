@@ -13,10 +13,6 @@ class User(AbstractUser):
             'unique': 'Пользователь с таким логином уже существует.',
         },
         validators=[
-            # RegexValidator(
-            #     regex=r'^[a-zA-Z]+[0-9]{0,}+[-_]{0,1}+[a-zA-Z0-9]+$',
-            #     message='Не допускаются специальные символы, кроме - или _'
-            # )
             RegexValidator(
                 regex=r'^[-a-zA-Z0-9_]+$',
                 message='Не допустимое имя'

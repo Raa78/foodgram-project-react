@@ -1,15 +1,19 @@
 from django.core import validators
 from django.db import models
-from foodgram.config import (COOKING_MIN_TIME, COOKING_MIN_TIME_ERROR,
-                             INGREDIENT_MIN_QUANTITY,
-                             INGREDIENT_MIN_QUANTITY_ERROR)
+
+from foodgram.settings import (
+    COOKING_MIN_TIME,
+    COOKING_MIN_TIME_ERROR,
+    INGREDIENT_MIN_QUANTITY,
+    INGREDIENT_MIN_QUANTITY_ERROR,
+)
 from users.models import User
 
 
 class Tag(models.Model):
     """Модель для тэга."""
     name = models.CharField(
-        max_length=200,
+        max_length=20,
         unique=True,
         error_messages={
             'unique': 'Данный тэг уже занят другим разделом.',
@@ -23,11 +27,10 @@ class Tag(models.Model):
         error_messages={
             'unique': 'Данный цвет уже занят.',
         },
-        # default='#0fdb00',  # rgb(15, 219, 0)
         verbose_name='Цветовой HEX-код'
     )
     slug = models.SlugField(
-        max_length=200,
+        max_length=20,
         unique=True,
         error_messages={
             'unique': 'Выбранный slug уже существует.',
@@ -60,12 +63,12 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     """Модель для ингридиентов."""
     name = models.CharField(
-        max_length=200,
+        max_length=50,
         verbose_name='Название ингредиента',
         help_text='Введите название ингредиента',
     )
     measurement_unit = models.CharField(
-        max_length=200,
+        max_length=20,
         verbose_name='Единица измерения',
         help_text='Введите еденицу измерения',
         )
@@ -95,8 +98,6 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         upload_to='recipes/image/',
-        blank=True,  # обязательно изображение готового блюда
-        null=True,
         verbose_name='Изображение',
         help_text='Добваьте изображение',
     )
@@ -213,7 +214,6 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        null=True,
         related_name='cart',
         verbose_name='Пользователь',
     )

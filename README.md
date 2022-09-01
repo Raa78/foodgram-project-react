@@ -30,6 +30,7 @@ cd .../foodgram-project-react/infra
 
 и создайте там файл .evn для хранения ключей:
 ```
+DEBUG_STATUS = False, еcли планируете использовать проект для разработки укажите  True
 SECRET_KEY = 'секретный ключ Django проекта'
 DB_ENGINE=django.db.backends.postgresql # указываем, что используем postgresql
 DB_NAME=postgres # указываем имя созданной базы данных
