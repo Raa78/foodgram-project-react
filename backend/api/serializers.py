@@ -1,15 +1,8 @@
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
 
-from foodgram.settings import (
-    EXIST_SUBSCRIBE_ERROR,
-    INGREDIENTS_COUNT_ERROR,
-    INGREDIENT_REPETITION_ERROR,
-    NON_EXIST_UNSUBSCRIBE_ERROR,
-    SUBSCRIBE_TO_YOURSELF_ERROR,
-    UNSUBSCRIBE_TO_YOURSELF_ERROR,
-)
 from recipes.models import (
     Ingredient,
     IngredientRecipe,
@@ -125,14 +118,22 @@ class SubscribeValidateSerializer(serializers.ModelSerializer):
         ).exists()
         if self._context.get('request').method == 'POST':
             if user == author:
-                raise validators.ValidationError(SUBSCRIBE_TO_YOURSELF_ERROR)
+                raise validators.ValidationError(
+                    settings.SUBSCRIBE_TO_YOURSELF_ERROR
+                )
             if model_objects_filter:
-                raise validators.ValidationError(EXIST_SUBSCRIBE_ERROR)
+                raise validators.ValidationError(
+                    settings.EXIST_SUBSCRIBE_ERROR
+                )
         if self._context.get('request').method == 'DELETE':
             if user == author:
-                raise validators.ValidationError(UNSUBSCRIBE_TO_YOURSELF_ERROR)
+                raise validators.ValidationError(
+                    settings.UNSUBSCRIBE_TO_YOURSELF_ERROR
+                )
             if not model_objects_filter:
-                raise validators.ValidationError(NON_EXIST_UNSUBSCRIBE_ERROR)
+                raise validators.ValidationError(
+                    settings.NON_EXIST_UNSUBSCRIBE_ERROR
+                )
         return obj
 
 
@@ -230,11 +231,11 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             ingredients_set.add(ingredient['id'])
             if ingredient['amount'] < 1:
                 raise serializers.ValidationError(
-                    INGREDIENTS_COUNT_ERROR
+                    settings.INGREDIENTS_COUNT_ERROR
                 )
         if len(ingredients_set) != len(data['ingredients']):
             raise serializers.ValidationError(
-                INGREDIENT_REPETITION_ERROR
+                settings.INGREDIENT_REPETITION_ERROR
             )
         return data
 

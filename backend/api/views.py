@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -24,7 +25,6 @@ from .serializers import (
     SubscribeValidateSerializer,
 )
 from .utils import make_shopping_list
-from foodgram.settings import SHOPPING_CART_FILENAME
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -192,6 +192,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             content_type='text/plain; charset=utf8'
         )
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
-            SHOPPING_CART_FILENAME
+            settings.SHOPPING_CART_FILENAME
             )
         return response

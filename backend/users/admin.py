@@ -1,7 +1,7 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from foodgram.settings import EMPTY_VALUE_DISPLAY
 from .models import Subscribe, User
 
 
@@ -24,7 +24,7 @@ class UserAdmin(UserAdmin):
         'last_name',
         'email',
     )
-    empty_value_display = EMPTY_VALUE_DISPLAY
+    empty_value_display = settings.EMPTY_VALUE_DISPLAY
 
 
 @admin.register(Subscribe)
@@ -42,4 +42,4 @@ class SubscribeAdmin(admin.ModelAdmin):
         'user',
         'author',
     )
-    empty_value_display = EMPTY_VALUE_DISPLAY
+    empty_value_display = settings.EMPTY_VALUE_DISPLAY

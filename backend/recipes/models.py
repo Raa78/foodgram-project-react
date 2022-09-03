@@ -1,12 +1,7 @@
+from django.conf import settings
 from django.core import validators
 from django.db import models
 
-from foodgram.settings import (
-    COOKING_MIN_TIME,
-    COOKING_MIN_TIME_ERROR,
-    INGREDIENT_MIN_QUANTITY,
-    INGREDIENT_MIN_QUANTITY_ERROR,
-)
 from users.models import User
 
 
@@ -63,7 +58,7 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     """Модель для ингридиентов."""
     name = models.CharField(
-        max_length=50,
+        max_length=100,
         verbose_name='Название ингредиента',
         help_text='Введите название ингредиента',
     )
@@ -119,8 +114,8 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки в минутах',
         validators=(validators.MinValueValidator(
-            COOKING_MIN_TIME,
-            message=COOKING_MIN_TIME_ERROR),
+            settings.COOKING_MIN_TIME,
+            message=settings.COOKING_MIN_TIME_ERROR),
         )
     )
     pub_date = models.DateTimeField(
@@ -156,8 +151,8 @@ class IngredientRecipe(models.Model):
     amount = models.PositiveSmallIntegerField(
         validators=(
             validators.MinValueValidator(
-                INGREDIENT_MIN_QUANTITY,
-                message=INGREDIENT_MIN_QUANTITY_ERROR),
+                settings.INGREDIENT_MIN_QUANTITY,
+                message=settings.INGREDIENT_MIN_QUANTITY_ERROR),
         ),
         verbose_name='Количество',
     )
