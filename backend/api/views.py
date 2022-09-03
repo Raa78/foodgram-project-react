@@ -188,7 +188,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         response = HttpResponse(
-            make_shopping_list(request),
+            make_shopping_list(request.user),
             content_type='text/plain; charset=utf8'
         )
         response['Content-Disposition'] = 'attachment; filename={0}'.format(

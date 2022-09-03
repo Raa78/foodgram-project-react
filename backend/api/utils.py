@@ -6,14 +6,14 @@ from django.db.models.aggregates import Sum
 from recipes.models import IngredientRecipe
 
 
-def make_shopping_list(self, request):
+def make_shopping_list(user):
     date = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
     text_lines = (
         'Список покупок продуктов\n'
         f'список сформирован на - {date}\n\n'
     )
     ingredients = IngredientRecipe.objects.filter(
-        recipe__cart__user=request.user
+        recipe__cart__user=user
     ).values(
         'ingredient__name',
         'ingredient__measurement_unit'
