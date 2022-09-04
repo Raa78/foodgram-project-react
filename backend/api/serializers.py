@@ -116,7 +116,6 @@ class SubscribeValidateSerializer(serializers.ModelSerializer):
             user=user,
             author=author
         ).exists()
-        # if self._context.get('request').method == 'POST':
         if self._context.get('request').method == 'create':
             if user == author:
                 raise validators.ValidationError(
