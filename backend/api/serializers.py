@@ -116,7 +116,8 @@ class SubscribeValidateSerializer(serializers.ModelSerializer):
             user=user,
             author=author
         ).exists()
-        if self._context.get('request').method == 'POST':
+        # if self._context.get('request').method == 'POST':
+        if self._context.get('request').method == 'create':
             if user == author:
                 raise validators.ValidationError(
                     settings.SUBSCRIBE_TO_YOURSELF_ERROR
@@ -125,7 +126,8 @@ class SubscribeValidateSerializer(serializers.ModelSerializer):
                 raise validators.ValidationError(
                     settings.EXIST_SUBSCRIBE_ERROR
                 )
-        if self._context.get('request').method == 'DELETE':
+        # if self._context.get('request').method == 'DELETE':
+        if self._context.get('request').method == 'destroy':
             if user == author:
                 raise validators.ValidationError(
                     settings.UNSUBSCRIBE_TO_YOURSELF_ERROR

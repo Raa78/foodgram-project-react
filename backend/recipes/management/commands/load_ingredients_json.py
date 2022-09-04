@@ -14,9 +14,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ingredients = open(JSON_DATA_FILE, 'r', encoding='utf-8')
-        for item in json.load(ingredients):
-            Ingredient.objects.create(
-                name=item['name'],
-                measurement_unit=item['measurement_unit']
-            )
+        json_data = json.load(ingredients)
+        Ingredient.objects.bulk_create(
+            [Ingredient(**item) for item in json_data]
+        )
     print('Все ингридиенты загружены!')

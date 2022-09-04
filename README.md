@@ -54,22 +54,19 @@ docker-compose exec backend python manage.py makemigrations
 docker-compose exec backend python manage.py migrate
 ```
 
-* cоздайте суперпользователя, введите - почту, логин, пароль:
-```
-docker-compose exec backend python manage.py createsuperuser
-```
-
 *  соберите статику:
 ```
 docker-compose exec backend python manage.py collectstatic --no-input
 ```
 
+* cоздайте суперпользователя, введите - почту, логин, пароль:
+```
+docker-compose exec backend python manage.py createsuperuser
+```
+
 *  загрузите в базу список ингридиентов и тэгов:
 ```
 docker-compose exec backend python manage.py load_ingredients_json
-```
-
-```
 docker-compose exec backend python manage.py load_tags
 ```
 

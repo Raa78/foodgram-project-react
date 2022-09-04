@@ -96,7 +96,6 @@ class SubscribeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post'])
     @transaction.atomic()
     def create(self, request, user_id=None):
         user = request.user
