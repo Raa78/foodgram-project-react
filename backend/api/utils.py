@@ -7,10 +7,10 @@ from recipes.models import IngredientRecipe
 
 
 def make_shopping_list(user):
-    date = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
+    current_date = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
     text_lines = (
         'Список покупок продуктов\n'
-        f'список сформирован на - {date}\n\n'
+        f'список сформирован на - {current_date}\n\n'
     )
     ingredients = IngredientRecipe.objects.filter(
         recipe__cart__user=user

@@ -1,8 +1,12 @@
 # Foodgram
 
-![Foodgram Workflow](https://github.com/Raa78/foodgram-project-react.git/actions/workflows/yamdb_workflow.yml/badge.svg)
+![Foodgram Workflow](https://github.com/Raa78/foodgram-project-react.git/actions/workflows/foodgram_workflow.yml/badge.svg)
 
-Проект развернут по адресу - http://***.***.***.***
+Проект развернут по адресу - http://51.250.98.163
+Логин и пароль администратора:
+логин: admin@mail.com
+пароль: qwerty
+
 
 ## Описание:
 
@@ -69,13 +73,13 @@ docker-compose exec backend python manage.py createsuperuser
 docker-compose exec backend python manage.py load_ingredients_json
 docker-compose exec backend python manage.py load_tags
 ```
-
+### Проект готов к работе
 
 
 ## Запуск проекта на сервере (раздел будет доработан)
 
 * Запуск docker-compose, развёртывание контейнеров
-  При первом запуске из директории /<project_dir>/infra/ выполнить:
+  При первом запуске выполнить:
 ```
 sudo docker-compose up -d --build
 ```

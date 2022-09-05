@@ -18,4 +18,4 @@ class Command(BaseCommand):
         Ingredient.objects.bulk_create(
             [Ingredient(**item) for item in json_data]
         )
-    print('Все ингридиенты загружены!')
+        self.stdout.write(self.style.SUCCESS('Все ингридиенты загружены!'))

@@ -18,7 +18,7 @@ services:
     depends_on:
       - db
     env_file:
-      - .env
+      - ./.env
 
   frontend:
     image: raa78/foodgram_frontend:latest
@@ -37,7 +37,7 @@ services:
       - media_value:/var/html/media/
     depends_on:
       - backend
-
+      - frontend
 
 volumes:
   postgres_data:
