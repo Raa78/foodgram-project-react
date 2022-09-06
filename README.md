@@ -2,7 +2,7 @@
 
 ![Foodgram Workflow](https://github.com/Raa78/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
-Проект развернут по адресу - http://62.84.121.204
+Проект развернут по адресу - http://51.250.98.111
 Логин и пароль администратора:
 логин: admin@mail.com
 пароль: qwerty
