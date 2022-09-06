@@ -1,6 +1,6 @@
 # Foodgram
 
-![Foodgram Workflow](https://github.com/Raa78/foodgram-project-react.git/actions/workflows/foodgram_workflow.yml/badge.svg)
+![Foodgram Workflow](https://github.com/Raa78/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
 Проект развернут по адресу - http://51.250.98.163
 Логин и пароль администратора:
@@ -108,5 +108,11 @@ sudo docker-compose exec backend python manage.py collectstatic --no-input
 ```
 sudo docker-compose exec backend python manage.py load_ingredients_json
 sudo docker-compose exec backend python manage.py load_tags
-sudo docker-compose exec backend python manage.py data_test
 ```
+
+Backend проекта выполнил студент 31 когорты Яндекс Практикума  
+Рубцов Андрей
+https://github.com/Raa78 
+
+Frontend - Yandex.Practicum
+https://practicum.yandex.ru/
